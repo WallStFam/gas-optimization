@@ -3,7 +3,7 @@ require("dotenv").config();
 
 // This function gets all the owners of all the tokens in a contract
 // We use the Wall Street Dads contract as an example
-// You'll need to enter INFURA_API_KEY in your .env file
+// You'll need to enter INFURA_API_KEY in your .env file to run this script(check .env.example)
 async function getAllOwners_ownerOf() {
     const abi = require("./dadsAbi.json");
     const provider = new ethers.providers.JsonRpcProvider("https://mainnet.infura.io/v3/" + process.env.INFURA_API_KEY);
