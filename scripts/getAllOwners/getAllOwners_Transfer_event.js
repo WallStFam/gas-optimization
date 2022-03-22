@@ -28,7 +28,7 @@ async function getAllOwners_transfer_event() {
     for (let i = 0; i < tokens.length; i++) {
         res += tokens[i] + " " + owners[tokens[i]] + "\n";
     }
-    fs.writeFileSync("./scripts/getAllOwners/transfer_event.txt", res);
+    fs.writeFileSync("./scripts/getAllOwners/output/transfer_event.txt", res);
 }
 
 module.exports = { getAllOwners_transfer_event };

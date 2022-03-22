@@ -35,7 +35,7 @@ async function getAllOwners_ownerOf() {
         res += i + " " + owners[i - 1] + "\n";
     }
 
-    fs.writeFileSync("./scripts/getAllOwners/ownerOf.txt", res);
+    fs.writeFileSync("./scripts/getAllOwners/output/ownerOf.txt", res);
 }
 
 async function getFirstTokenId(contract) {
