@@ -81,31 +81,75 @@ We used Wall Street Dads contract as an example in those scripts, but you are fr
 
 ## 2. Use mappings instead of arrays
 
-Sometimes it's possible to replace the functionality of an array with a mapping. The advantage of mappings is that you can access any value without having to traverse other items like with an array.
+Sometimes it's possible to replace the functionality of an array with a mapping. The advantage of mappings is that you can access any value without having to traverse other items like you normally do with an array.
 
-For example, let's say you want to add administrator accounts to your contract. These administrators are able to execute some functions that normal users can't.
-You could have an array of administrators and a function to add new administrators:
+For example, it's very common among NFT collections to use whitelists and users who are added to the whitelist have priority minting and access to a lower price than the public sale.
+
+Inside the smart contract you could have an array of addresses for the whitelisted users:
 
 ```
-address[] admins;
+address[] whitelistedUsers;
 
-function addAdmin(address _admin) external {
-    adminis.push(_admin);
+function mintPublicSale() external payable {
+    require(msg.value >= 0.5 ether, "You must send at least 0.5 ether");
+    _mint(msg.sender, currTokenId++);
 }
-```
 
-A function modifier can check if an address is an administrator, and we can use that modifier in different functions that only administrators can call:
+function mintWhitelist() external payable {
+    require(isWhitelisted(msg.sender), "You are not whitelisted");
+    require(msg.value >= 0.2 ether, "You must send at least 0.2 ether");
+    _mint(msg.sender, currTokenId++);
+}
 
-```
-function isAdmin(address _admin) public view returns (bool) {
-    for(uint i=0; i<admins.length; i++) {
-        if(admins[i] == _admin) {
+function addToWhitelist(address user) external onlyOwner {
+    require(!isWhitelisted(user), "User is already whitelisted");
+    whitelistedUsers.push(user);
+}
+
+function isWhitelisted(address _user) public view returns (bool) {
+    for(uint i=0; i<whitelistedUsers.length; i++){
+        if(whitelistedUsers[i] == _user){
             return true;
         }
     }
     return false;
 }
 ```
+
+And although this code works, it has a big problem: calling mintWhitelist() gets more expensive as more users are added to whitelistedUsers array.
+
+Everytime you have a loop in solidity, make sure the loop is bounded. This means that the loop has a known amount of maximum iterations, and also that the amount of iterations is low. This is most important when this loop is inside a function that users will call.
+
+If your loop is unbounded, then try a different approach. Moving things off-chain or using different code structures should be possible.
+
+For this example of the whitelist, the code can be rewritten using a mapping:
+
+```
+mapping(address => bool) whitelistedUsers;
+
+function mintPublicSale() external payable {
+    require(msg.value >= 0.5 ether, "You must send at least 0.5 ether");
+    _mint(msg.sender, currTokenId++);
+}
+
+function mintWhitelist() external payable {
+    require(isWhitelisted(msg.sender), "You are not whitelisted");
+    require(msg.value >= 0.2 ether, "You must send at least 0.2 ether");
+    _mint(msg.sender, currTokenId++);
+}
+
+function addToWhitelist(address _user) external onlyOwner {
+    whitelistedUsers[_user] = true;
+}
+
+function isWhitelisted(address _user) public view returns (bool) {
+    return whitelistedUsers[_user];
+}
+```
+
+Using a mapping for whitelistedUsers allows the smart contract to check if a user is whitelisted in only one instructions instead of using a loop.
+
+This makes the code much cheaper to execute and it doesn't get more expensive when more users added to the whitelist(the cost is constant for any amount of whitelisted users).
 
 ## ERC721A
 
