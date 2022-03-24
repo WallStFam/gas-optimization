@@ -17,7 +17,7 @@ async function vs721A() {
         console.log(`\tVanilla721 -> Gas used: ${gasUsed}`);
 
         tx = await (await vanilla721A.mint(amount, { value: value.mul(amount) })).wait();
-        console.log(`\tVanilla721A mint(${amount}) -> Gas used: ${tx.gasUsed}`);
+        console.log(`\tVanilla721A -> Gas used: ${tx.gasUsed}`);
     }
 
     // First mint:

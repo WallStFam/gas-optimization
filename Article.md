@@ -191,9 +191,19 @@ When a user mints multiple tokens, ERC721A updates the balance of the minter onl
 
 Setting variables for batches instead of per token, makes minting multiple tokens much cheaper if you want to mint many tokens.
 
-As we mentioned earlier, the problem with ERC721A is that because of this minting optimization, users will incurr in more gas costs when they want to transfer tokens:
+As we mentioned earlier, the problem with ERC721A is that because of this minting optimization, users will incurr in more gas costs when they want to transfer tokens.
 
-CHART transfer ERC721 ERC721A Overhead
+The following is chart created by simulating 20 users minting and transferring a hundred times randomly:
+
+|     | ERC721   | ERC721A  |
+| --- | -------- | -------- |
+| Min | 40531    | 49215    |
+| Max | 62431    | 105742   |
+| Avg | 45451.72 | 70441.26 |
+
+In average transferring tokens with ERC721A is 55% more expensive.
+
+Then, to decide if you are going to use ERC721A, take into account this extra cost for transferring tokens and think if users will be minting big batches of tokens or not.
 
 ## 4. Start with Token Id 1
 
