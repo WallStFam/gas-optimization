@@ -92,13 +92,13 @@ Inside the smart contract you could have an array of addresses for the whitelist
 address[] whitelistedUsers;
 
 function mintPublicSale() external payable {
-    require(msg.value >= 0.5 ether, "You must send at least 0.5 ether");
+    require(msg.value >= 0.2 ether, "Not enough ether");
     _mint(msg.sender, currTokenId++);
 }
 
 function mintWhitelist() external payable {
     require(isWhitelisted(msg.sender), "You are not whitelisted");
-    require(msg.value >= 0.2 ether, "You must send at least 0.2 ether");
+    require(msg.value >= 0.1 ether, "Not enough ether");
     _mint(msg.sender, currTokenId++);
 }
 
@@ -129,13 +129,13 @@ For this example of the whitelist, the code can be rewritten using a mapping:
 mapping(address => bool) whitelistedUsers;
 
 function mintPublicSale() external payable {
-    require(msg.value >= 0.5 ether, "You must send at least 0.5 ether");
+    require(msg.value >= 0.2 ether, "Not enough ether");
     _mint(msg.sender, currTokenId++);
 }
 
 function mintWhitelist() external payable {
     require(isWhitelisted(msg.sender), "You are not whitelisted");
-    require(msg.value >= 0.2 ether, "You must send at least 0.2 ether");
+    require(msg.value >= 0.1 ether, "Not enough ether");
     _mint(msg.sender, currTokenId++);
 }
 
@@ -152,12 +152,24 @@ Using a mapping for whitelistedUsers allows the smart contract to check if a use
 
 This makes the code much cheaper to execute and it doesn't get more expensive when more users added to the whitelist(the cost is constant for any amount of whitelisted users).
 
+Here's a table of gas costs for calling mintWhitelist() for different amount of users:
+
+|                   | WhitelistMapping | WhitelistArray | Overhead |
+| ----------------- | ---------------- | -------------- | -------- |
+| MintWhitelist 10  | 56.037           | 56.372         | -335     |
+| MintWhitelist 100 | 112.074          | 58.336         | 53.738   |
+| MintWhitelist 500 | 280.185          | 64.228         | 215.957  |
+
 Full source code for these smart contracts can be found here:
 
 -   https://github.com/WallStFam/gas-optimization/blob/master/contracts/WhitelistArray721.sol
 -   https://github.com/WallStFam/gas-optimization/blob/master/contracts/WhitelistMapping721.sol
 
-## 3. ERC721A
+And this is the script that was used to calculate gas costs with each method:
+
+-   https://github.com/WallStFam/gas-optimization/blob/master/scripts/whitelistUsers.js
+
+## 3. ERC721A standard
 
 The team from Azuki NFT(https://www.azuki.com/) published a new standard for ERC721 called ERC721A.
 
@@ -193,7 +205,7 @@ Setting variables for batches instead of per token, makes minting multiple token
 
 As we mentioned earlier, the problem with ERC721A is that because of this minting optimization, users will incurr in more gas costs when they want to transfer tokens.
 
-The following is chart created by simulating 20 users minting and transferring a hundred times randomly:
+The following is chart created by simulating 20 users minting and transferring different amount of tokens a 100 times in random order:
 
 |     | ERC721   | ERC721A  |
 | --- | -------- | -------- |
@@ -204,6 +216,12 @@ The following is chart created by simulating 20 users minting and transferring a
 In average transferring tokens with ERC721A is 55% more expensive.
 
 Then, to decide if you are going to use ERC721A, take into account this extra cost for transferring tokens and think if users will be minting big batches of tokens or not.
+
+If you want to check these values yourself or simulate a higher amount of users or transfers, here is the script that was used to calculate the values:
+
+https://github.com/WallStFam/gas-optimization/blob/master/scripts/vs721A_transfer.js
+
+</br>
 
 ## 4. Start with Token Id 1
 
@@ -221,24 +239,92 @@ Here's a comparison of the first mint of a ERC721A contract using tokenId initia
 
 So if one of your users is going to make the first mint, make it cheaper for him by initializing tokenId in 1.
 
-## Merkle Tree
+</br>
 
-Explanation, example, how much gas is saved, and link to another article with a much deeper explanation
+## 5. Merkle Tree for whitelists
 
-## Packed variables
+In a previous chapter "Use mappings instead of arrays" we presented examples of contracts that implement whitelisting.
+
+Those examples used either an array or mapping to store the whitelisted addresses. Although using a mapping was cheaper than using an array, it can still be a very expensive solution if you plan to have let's say a 1000 whitelisted users.
+
+Here's how much it cost to whitelist users using an array and a mapping:
+
+|                    | WhitelistArray | WhitelistMapping |
+| ------------------ | -------------- | ---------------- |
+| AddToWhitelist 10  | 645.651        | 461.260          |
+| AddToWhitelist 100 | 20.393.142!!   | 4.612.552!       |
+| AddToWhitelist 500 | 486.715.698!!! | 23.062.604!!     |
+
+Using an array is extremely expensive, mainly because each time you add a new user to the whitelist, you need to check if the user hasn't been added yet, making it more and more expensive to check the more users are whitelisted.
+
+Using a mapping is much cheaper than using an array, but can still get really expensive. It's not uncommon to whitelist 500, 1000 or even 2000 or 3000 users. At current gas prices, whitelisting 500 users at 23.062.604 gas, is equal to 5648$!
+
+Given that you probably don't want to spend that much money adding users to your whitelist, the solution and cheapest way to do it is using a Merkle tree.
+
+(Note: we'll explain how a Merkle tree works, but here's a great video you can use to better understand the algorithm, https://www.youtube.com/watch?v=YIc6MNfv5iQ)
+
+A merkle tree is a binary tree that stores hashes. Each leaf in the tree is a hash and the parent nodes are hashes of the children.
+In our case we would use it to store the whitelisted addresses, so each leaf of the tree would be the Hash of an address.
+A simple tree of 4 addresses would look like this:
+
+                                                H7 = Hash(H5+H6)
+                                      /                                     \
+                    H5 = Hash(H1 + H2)                                       H6 = Hash(H3 + H4)
+                        /       \                                           /           \
+    H1 = Hash(address 1)       H2 = Hash(address 2)          H3 = Hash(address 3)        H4 = Hash(address 4)
+
+The advantage of using a Merkle tree is that the only data you need to write into the smart contract is the root of the Merkle tree. In our example that would be H7.
+
+So instead of having to write thousands of addresses into your smart contract, you only need to write one Hash which is only 32 bytes.
+
+This, of course, makes writing a whitelist to the smart contract much cheaper, as it's independent of the size of the whitelist. The cost will be the same if the whitelist is of size 10 or of size 10.000.
+
+But, although it's not all pros, the disadvantages, we think, are not a big deal. There are a couple of disadvantages: using a Merkle tree makes the whitelist mint function more complex which incurs in a higher cost(not much, we'll show further down), and it's also more work to call the whitelist mint function from the client.
+
+It costs more gas to mint using a Merkle Tree because to check if an address is inside the Merkle Tree, you need to provide what's called a Merkle proof.
+
+A Merkle proof is an array of hashes that your smart contract will use to check a user's address is in the Merkle tree. The Merkle proof is generated using the Merkle tree(from the client, i.e Javascript), and it works by continuously hashing from the leaf to the root and making sure that at the end the root stored in the smart contract matches the root calculated using the proof.
+
+If we go back to the example, imagine the smart contract has the root stored(H7), and the user with address 4 calls the whitelist mint function. In order for the smart contract to check that address 4 is whitelisted, it needs the proof for address 4. The frontend will pass that proof, which for this example will be an array with the elements H3 and H5. That's because first it will first calculate H4 = Hash(address 4), then calculate H6 = Hash(H3 + H4) and finally calculate H7 = Hash(H5 + H6). So it only needed H3 and H5 to arrive to the root and verify that the calculated root and the stored root match.
+
+As we showed, you'll save a lot of gas by not having to whitelist every address one by one, because instead you only need to write the Merkle tree root in the smart contract. But as we mentioned this makes the whitelist mint function a bit more complex and so a bit more expensive.
+
+In the following table we compare a whitelist mint function from a contract that uses a mapping for the whitelist and another that uses a Merkle Tree:
+
+|               | WhitelistMapping | WhitelistMerkle |
+| ------------- | ---------------- | --------------- |
+| MintWhitelist | 58.107           | 67.212          |
+
+The overhead of whitelist minting using a Merkle tree is very small(around 15% more gas). This is because the cost of calculating hashes in Solidity is low.
+
+In order to decide if you should use a Merkle tree in your smart contract, make sure you understand the pros and cons. The gas cost is not much higher, but you will need to setup your frontend so it is able to create an instance of the Merkle tree and use it calculate the proof.
+
+The script used for calculating the gas costs can be found here:
+
+-   https://github.com/WallStFam/gas-optimization/blob/master/scripts/vsMerkle.js
+
+In this script you'll also see how a Merkle tree is created using a list of addresses and how the proof is calculated and passed to the smart contract.
+
+The smart contract WhitelistMerkle721.sol is used in the script and implements the functionality for whitelist minting using Merkle tree:
+
+-   https://github.com/WallStFam/gas-optimization/blob/master/contracts/WhitelistMerkle721.sol
+
+</br>
+
+## 6. Packing your variables
 
 uint8,16, etc
 Show example of how much gas can be saved in the mint function and how changing the variables even if they don't appear in the mint function can add to the gas costs because they are not packed correctly
 
-## Unchecked
+## 7. Using unchecked
 
 Explanation, show example of how much cost can be saved, warning when using it
 
-## Optimizer
+## 8. Optimizer
 
 How it works, example of how much gas is saved when using it
 
-## Why is the first mint more expensive(for each user?)
+## 9. Why is first mint more expensive and is there anything you can do about it?
 
 Explain and show example of gas used(and maybe how can it be improved)
 

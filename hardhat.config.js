@@ -3,7 +3,9 @@ const { getAllOwners_transfer_event } = require("./scripts/getAllOwners/getAllOw
 const { vs721A } = require("./scripts/vs721A");
 const { vs721A_transfer } = require("./scripts/vs721A_transfer");
 const { vsEnumerable } = require("./scripts/vsEnumerable");
+const { vsMerkle } = require("./scripts/vsMerkle");
 const { vsTokenIdZero } = require("./scripts/vsTokenIdZero");
+const { whitelistUsers } = require("./scripts/whitelistUsers");
 
 require("@nomiclabs/hardhat-waffle");
 
@@ -29,6 +31,10 @@ task("vs721A_transfer", "Deploys, mints and transfer Vanilla721 and Vanilla721A 
 
 task("vsTokenIdZero", "Deploys and mints Vanilla721A_0 and Vanilla721A and reports gas usage of both").setAction(vsTokenIdZero);
 
+task("vsMerkle", "Deploys and mints WhitelistMapping721 and WhitelistMerkle721 and reports gas usage of both").setAction(
+    vsMerkle
+);
+
 task("getAllOwners_ownerOf", "Gets all the owners of all the tokens in a contract calling ownerOf for each tokenId").setAction(
     getAllOwners_ownerOf
 );
@@ -37,3 +43,7 @@ task(
     "getAllOwners_transfer_event",
     "Gets all the owners of all the tokens in a contract by processing the Transfer events"
 ).setAction(getAllOwners_transfer_event);
+
+task("whitelistUsers", "Deploys and mints WhitelistArray721 and WhitelistMapping721 and reports gas usage of both").setAction(
+    whitelistUsers
+);

@@ -12,13 +12,13 @@ contract WhitelistArray721 is ERC721, Ownable {
     }
 
     function mintPublicSale() external payable {
-        require(msg.value >= 0.5 ether, "You must send at least 0.5 ether");
+        require(msg.value >= 0.2 ether, "Not enough ether");
         _mint(msg.sender, currTokenId++);
     }
 
     function mintWhitelist() external payable {
         require(isWhitelisted(msg.sender), "You are not whitelisted");
-        require(msg.value >= 0.2 ether, "You must send at least 0.2 ether");
+        require(msg.value >= 0.1 ether, "Not enough ether");
         _mint(msg.sender, currTokenId++);
     }
 

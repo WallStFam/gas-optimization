@@ -8,7 +8,7 @@ async function vsTokenIdZero() {
     const value = { value: ethers.utils.parseEther("0.1") };
 
     console.log("First mint:");
-    tx = await (await vanilla721A_0.mint(1, value)).wait();
+    let tx = await (await vanilla721A_0.mint(1, value)).wait();
     console.log(`\tVanilla721A_0 mint -> Gas used: ${tx.gasUsed}`);
 
     tx = await (await vanilla721A_1.mint(1, value)).wait();
