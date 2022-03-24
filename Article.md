@@ -169,6 +169,8 @@ And this is the script that was used to calculate gas costs with each method:
 
 -   https://github.com/WallStFam/gas-optimization/blob/master/scripts/whitelistUsers.js
 
+</br>
+
 ## 3. ERC721A standard
 
 The team from Azuki NFT(https://www.azuki.com/) published a new standard for ERC721 called ERC721A.
