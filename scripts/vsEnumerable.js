@@ -4,28 +4,35 @@ async function vsEnumerable() {
     const vanilla721 = await deployContract("Vanilla721");
     const enumerable721 = await deployContract("Enumerable721");
 
-    const [user] = await ethers.getSigners();
+    async function reportGasUsed(amount) {
+        const value = { value: ethers.utils.parseEther("0.1") };
 
-    let tx = await (await vanilla721.mint(user.address, 1)).wait();
-    console.log("Vanilla721 mint -> Gas used: " + tx.gasUsed);
+        console.log("Mint " + amount + ":");
+        let gasUsed = 0;
+        for (let i = 0; i < amount; i++) {
+            tx = await (await vanilla721.mint(value)).wait();
+            gasUsed += tx.gasUsed.toNumber();
+        }
+        avg = amount > 1 ? ", Avg: " + gasUsed / amount : "";
+        console.log(`\tVanilla721 -> Gas used: ${gasUsed}${avg}`);
 
-    tx = await (await enumerable721.mint(user.address, 1)).wait();
-    console.log("Enumerable721 mint -> Gas used: " + tx.gasUsed);
+        gasUsed = 0;
+        for (let i = 0; i < amount; i++) {
+            tx = await (await enumerable721.mint(value)).wait();
+            gasUsed += tx.gasUsed.toNumber();
+        }
+        avg = amount > 1 ? ", Avg: " + gasUsed / amount : "";
+        console.log(`\tEnumerable721 -> Gas used: ${gasUsed}${avg}`);
+    }
+
+    // First mint:
+    await reportGasUsed(1);
 
     // Second mint:
+    await reportGasUsed(1);
 
-    tx = await (await vanilla721.mint(user.address, 2)).wait();
-    console.log("Vanilla721 mint -> Gas used: " + tx.gasUsed);
-
-    tx = await (await enumerable721.mint(user.address, 2)).wait();
-    console.log("Enumerable721 mint -> Gas used: " + tx.gasUsed);
-
-    for (let i = 0; i < 3; i++) {
-        tx = await (await vanilla721.mint(user.address, 3 + i)).wait();
-        console.log("Vanilla721 mint -> Gas used: " + tx.gasUsed);
-        tx = await (await enumerable721.mint(user.address, 3 + i)).wait();
-        console.log("Enumerable721 mint -> Gas used: " + tx.gasUsed);
-    }
+    // Batch mint 3
+    await reportGasUsed(3);
 }
 
 module.exports = { vsEnumerable };
