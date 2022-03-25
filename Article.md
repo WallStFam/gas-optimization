@@ -322,8 +322,55 @@ The smart contract WhitelistMerkle721.sol is used in the script and implements t
 
 ## 6. Packing your variables
 
-uint8,16, etc
-Show example of how much gas can be saved in the mint function and how changing the variables even if they don't appear in the mint function can add to the gas costs because they are not packed correctly
+Solidity arranges variables in slots of 32 bytes.
+
+This means that to read a variable in any particular slot, the whole slot needs to be read.
+
+You can use this feature in our advantage. If you have a function that uses variables which are all in one slot, it will be cheaper to read and write to them. You will save on gas costs as the slot needs to be loaded only once.
+
+Let's look at two ways of packing 3 variables:
+
+A)
+
+```
+uint8 var1 = 1;
+uint256 var2 = 1;
+uint8 var3 = 1;
+```
+
+B)
+
+```
+uint256 var1 = 1;
+uint8 var2 = 1;
+uint8 var3 = 1;
+```
+
+Since variables are packed in the order they are input in the smart contract, in the case A) the 3 variables are using 3 slots, because var2 uses a complete slot, making the others use one slot each.
+
+In B) the 3 variables are using 2 slots, as var2 and var3 can be packed together.
+
+When you pack your variables this way you save in gas costs for both deploying the contract and calling functions.
+
+Let's look at gas costs of calling this simple function for A) and B):
+
+```
+function foo() public {
+    var1 = 2;
+    var2 = 3;
+    var3 = 4;
+}
+```
+
+|     | Gas cost(A) | Gas cost(B) |
+| --- | ----------- | ----------- |
+| foo | 36356       | 31606       |
+
+As you can see the gas cost of calling foo() increased by almost 5000 gas units!
+
+Now think of all the places different variables are called inside a smart contract. All those calls to unpacked or incorrectly packed variables will add up.
+
+And even if packed correctly, you can check how you use different packed variables. If a function will be called many times, make sure that you can fit all the variables the function uses in as little slots as possible.
 
 ## 7. Using unchecked
 
@@ -364,3 +411,7 @@ ERC721 that inherits from ERC721Enumerable
 Scripts
 Get the token ids for each user using ownerOf
 Get the token ids for each user using events
+
+```
+
+```
