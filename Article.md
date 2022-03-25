@@ -14,7 +14,6 @@ In this article we'll go through different ways to accomplish this:
     <li>Merkle Tree for whitelists</li>
     <li>Packing your variables</li>
     <li>Using unchecked</li>
-    <li>Optimizer</li>
     <li>Why is first mint more expensive and is there anything you can do about it?</li>
 </ol>
 
@@ -374,13 +373,40 @@ And even if packed correctly, you can check how you use different packed variabl
 
 ## 7. Using unchecked
 
-Explanation, show example of how much cost can be saved, warning when using it
+Arithmetic operations can be wrapped in unchecked blocks, that way the compiler won't include additional op codes to check for underflow/overflow. This can make your code more cost efficient.
 
-## 8. Optimizer
+Let's look at an example:
 
-How it works, example of how much gas is saved when using it
+```
+uint a = 1;
+uint b = 2;
+uint c = 10;
 
-## 9. Why is first mint more expensive and is there anything you can do about it?
+function unchecked_() public {
+    unchecked {
+        a = a *5;
+        c += a;
+        b += c + a * 2;
+    }
+}
+
+function checked() public {
+    a = a *5;
+    c += a;
+    b += c + a * 2;
+}
+```
+
+Both checked and unchecked\_ functions do the same arithmetic operations but they use different amount of gas:
+
+|               | Gas cost |
+| ------------- | -------- |
+| unchecked\_() | 36588    |
+| checked()     | 37578    |
+
+The savings are not huge but if you have many different arithmetic operations or for example a for loop where you modify the value of the iterator, then you can save some gas for your users with an unchecked block.
+
+## 8. Why is first mint more expensive and is there anything you can do about it?
 
 Explain and show example of gas used(and maybe how can it be improved)
 

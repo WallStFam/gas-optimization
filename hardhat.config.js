@@ -1,6 +1,7 @@
 const { getAllOwners_ownerOf } = require("./scripts/getAllOwners/getAllOwners_ownerOf");
 const { getAllOwners_transfer_event } = require("./scripts/getAllOwners/getAllOwners_Transfer_event");
 const { mintWhitelisted } = require("./scripts/mintWhitelisted");
+const { unchecked } = require("./scripts/unchecked");
 const { variablePacking } = require("./scripts/variablePacking");
 const { vs721A } = require("./scripts/vs721A");
 const { vs721A_transfer } = require("./scripts/vs721A_transfer");
@@ -59,3 +60,5 @@ task(
 task("variablePacking", "Deploys different VariablePacking_N contracts and reports gas usage for different functions").setAction(
     variablePacking
 );
+
+task("unchecked", "Deploys Unchecked contract and reports gas usage").setAction(unchecked);
