@@ -440,7 +440,22 @@ Whenever you are creating your own smart contract, make sure you test the cost o
 ## Popular contracts
 
 To end this article. We thought it would be a good idea to check the smart contracts of popular NFT collections.
-We chose ...
+
+We chose BAYC, Doodles and Cool Cats.
+
+Let's look at how much mint functions cost for each contract:
+
+|           | Mint 1  | Mint 5  |
+| --------- | ------- | ------- |
+| BAYC      | 173.576 | 636.912 |
+| Doodles   | 152.599 | 610.131 |
+| Cool Cats | 149.778 | 608.730 |
+
+With the techniques explained in this article you can target a cost for minting 1 of around 60.000 gas and for minting 5 of around 70.000 gas(if you use ERC721A to take advantage of multiple token mint).
+
+The reason why those 3 contracts have such an expensive mint function is because they all use ERC721Enumerable, which as we saw in "Do you really need ERC721Enumerable?" can be avoided most of the time.
+
+For minting 5 tokens, the cost is really high(since it can potentially be almost 10 times less) and they would have made their users a big favor if they implemented ERC721A or a similar solution.
 
 ## Ideas for other articles:
 
