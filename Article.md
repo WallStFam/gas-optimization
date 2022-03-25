@@ -235,7 +235,7 @@ https://github.com/WallStFam/gas-optimization/blob/master/scripts/vs721A_transfe
 
 Many contracts start token id at zero(i.e Azuki, BAYC, etc).
 
-And this is ok if you as the creator are going to do the first mint. Because as we mentioned before in the chapter "Do you really need ERC721Enumerable?", in Solidity it's expensive to set variables from zero to non-zero.
+And this is ok if you as the creator are going to do the first mint. Because as we mentioned before in the section "Do you really need ERC721Enumerable?", in Solidity it's expensive to set variables from zero to non-zero.
 
 It's a nice trick to start the token id at 1, that way you'll make the first mint as much cheaper.
 
@@ -251,7 +251,7 @@ So if one of your users is going to make the first mint, make it cheaper for him
 
 ## 5. Merkle Tree for whitelists
 
-In a previous chapter "Use mappings instead of arrays" we presented examples of contracts that implement whitelisting.
+In a previous section "Use mappings instead of arrays" we presented examples of contracts that implement whitelisting.
 
 Those examples used either an array or mapping to store the whitelisted addresses. Although using a mapping was cheaper than using an array, it can still be a very expensive solution if you plan to have let's say a 1000 whitelisted users.
 
@@ -408,17 +408,39 @@ The savings are not huge but if you have many different arithmetic operations or
 
 ## 8. Why is first mint more expensive and is there anything you can do about it?
 
-Explain and show example of gas used(and maybe how can it be improved)
+In the first section "Do you really need ERC721Enumerable?" we differentiated the gas cost for the first mint and for the ones that come after.
+
+First mints are normally more expensive because there are variables that change from zero to non-zero which is Solidity is very expensive.
+
+Given a variables this is the cost of setting it from zero to non-zero, from non-zero to non-zero and from non-zero to zero:
+
+|                           | Gas cost |
+| ------------------------- | -------- |
+| From zero to non-zero     | 43.300   |
+| From non-zero to non-zero | 26.222   |
+| From non-zero to zero     | 21.444   |
+
+Setting a variable from zero to non-zero it's almost twice as expensive than setting a variable from non-zero to non-zero. So, the takeaway is that you should be mindful of that and if it's possible to initialize a variable as non-zero instead of zero, then you could save some gas for your users.
+
+You can check the smart contract and script used in this section at:
+
+-   https://github.com/WallStFam/gas-optimization/blob/master/contracts/SetVariables.sol
+-   https://github.com/WallStFam/gas-optimization/blob/master/scripts/setVariables.js
 
 ## Testing
 
-How to test how much gas your functions are using in any network
-Show hardhat example project
+One of the best ways to move the blockchain technology forward is to make the user experience better.
+
+Lowering gas costs is a great way to make a better UX.
+
+We shared smart contracts and scripts related to each section. Check how we calculated gas costs for the functions of the smart contracts.
+
+Whenever you are creating your own smart contract, make sure you test the cost of your functions, mainly the ones that your users will call(i.e mint function). Try to apply some or all of the techniques explained in this article to lower gas fees. You'll be helping not only your project but the whole ecosystem too.
 
 ## Popular contracts
 
-Show some examples from popular contracts
-What they did right and what could be improved.
+To end this article. We thought it would be a good idea to check the smart contracts of popular NFT collections.
+We chose ...
 
 ## Ideas for other articles:
 
@@ -427,17 +449,3 @@ Multiple mint phases
 Wrapped NFTs(they unlock a different NFT)
 Better updateable NFTs:
 https://nftchance.medium.com/mimetic-metadata-how-to-create-a-truly-non-dilutive-nft-collection-in-2022-746a01f886c5
-
-Code
-
-Smart contracts
-ERC721 vanilla
-ERC721 that inherits from ERC721Enumerable
-
-Scripts
-Get the token ids for each user using ownerOf
-Get the token ids for each user using events
-
-```
-
-```
