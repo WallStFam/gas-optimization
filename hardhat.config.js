@@ -1,5 +1,6 @@
 const { getAllOwners_ownerOf } = require("./scripts/getAllOwners/getAllOwners_ownerOf");
 const { getAllOwners_transfer_event } = require("./scripts/getAllOwners/getAllOwners_Transfer_event");
+const { mintWhitelisted } = require("./scripts/mintWhitelisted");
 const { vs721A } = require("./scripts/vs721A");
 const { vs721A_transfer } = require("./scripts/vs721A_transfer");
 const { vsEnumerable } = require("./scripts/vsEnumerable");
@@ -14,7 +15,7 @@ module.exports = {
         version: "0.8.4",
         settings: {
             optimizer: {
-                enabled: true,
+                enabled: false,
                 runs: 200,
             },
         },
@@ -44,6 +45,12 @@ task(
     "Gets all the owners of all the tokens in a contract by processing the Transfer events"
 ).setAction(getAllOwners_transfer_event);
 
-task("whitelistUsers", "Deploys and mints WhitelistArray721 and WhitelistMapping721 and reports gas usage of both").setAction(
-    whitelistUsers
-);
+task(
+    "whitelistUsers",
+    "Deploys and whitelists users for WhitelistArray721 and WhitelistMapping721 and reports gas usage of both"
+).setAction(whitelistUsers);
+
+task(
+    "mintWhitelisted",
+    "Deploys WhitelistArray721 and WhitelistMapping721, mints tokens and reports gas usage of both"
+).setAction(mintWhitelisted);

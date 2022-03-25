@@ -42,8 +42,8 @@ Here is a comparison of the gas costs to mint one token from two smart contracts
 
 |               | Gas used |
 | ------------- | -------- |
-| Vanilla721    | 73539    |
-| Enumerable721 | 145323   |
+| Vanilla721    | 73.539   |
+| Enumerable721 | 145.323  |
 
 ERC721Enumerable is 2 times as costly as vanilla ERC721.
 
@@ -51,8 +51,8 @@ The difference in gas used is even more pronounced if you look into mints that c
 
 |               | Gas used(after first mint) |
 | ------------- | -------------------------- |
-| Vanilla721    | 56439                      |
-| Enumerable721 | 150923                     |
+| Vanilla721    | 56.439                     |
+| Enumerable721 | 150.923                    |
 
 ERC721Enumerable is almost 3 times as costly as vanilla ERC721 after the first mint!
 
@@ -152,22 +152,29 @@ Using a mapping for whitelistedUsers allows the smart contract to check if a use
 
 This makes the code much cheaper to execute and it doesn't get more expensive when more users added to the whitelist(the cost is constant for any amount of whitelisted users).
 
-Here's a table of gas costs for calling mintWhitelist() for different amount of users:
+This is the average cost of calling mintWhitelist() for different amount of users:
 
-|                   | WhitelistMapping | WhitelistArray | Overhead |
-| ----------------- | ---------------- | -------------- | -------- |
-| MintWhitelist 10  | 56.037           | 56.372         | -335     |
-| MintWhitelist 100 | 112.074          | 58.336         | 53.738   |
-| MintWhitelist 500 | 280.185          | 64.228         | 215.957  |
+|               | WhitelistMapping(Avg) | WhitelistArray(Avg) |
+| ------------- | --------------------- | ------------------- |
+| MintWhitelist | 58.598                | 434.427             |
 
-Full source code for these smart contracts can be found here:
+These values were calculated using a whitelist of 350 users and the users that minted where in different positions in the whitelist.
+
+The values that you'd get for using WhitelistArray will vary depending on where inside the whitelist array is the msg.sender.
+If it's at the beginning the call to mintWhitelist will be much cheaper than if it is at the very end.
+
+The value for WhitelistMapping is always the same, independent of the amount of users. The average value for WhitelistMapping coincides with the min and max values.
+
+For WhitelistArray the min and max values in this example ranged from 60.884(for a user at the beginning of the whitelist) to 990.516(for a user at the end of the list).
+
+Full source code for the smart contracts can be found here:
 
 -   https://github.com/WallStFam/gas-optimization/blob/master/contracts/WhitelistArray721.sol
 -   https://github.com/WallStFam/gas-optimization/blob/master/contracts/WhitelistMapping721.sol
 
 And this is the script that was used to calculate gas costs with each method:
 
--   https://github.com/WallStFam/gas-optimization/blob/master/scripts/whitelistUsers.js
+-   https://github.com/WallStFam/gas-optimization/blob/master/scripts/mintWhitelisted.js
 
 </br>
 
@@ -197,7 +204,7 @@ But the good thing is that even comparing to vanilla ERC721, ERC721A makes minti
 | Mint 10  | 560.370   | 74.048  | 486.322!    |
 | Mint 100 | 5.603.700 | 250.808 | 5.352.892!! |
 
-So... How did they achieve this lower gas cost?
+So... How did they achieve this much lower gas cost?
 
 The way they did it is straightforward to understand:
 
@@ -209,11 +216,11 @@ As we mentioned earlier, the problem with ERC721A is that because of this mintin
 
 The following is chart created by simulating 20 users minting and transferring different amount of tokens a 100 times in random order:
 
-|     | ERC721   | ERC721A  |
-| --- | -------- | -------- |
-| Min | 40531    | 49215    |
-| Max | 62431    | 105742   |
-| Avg | 45451.72 | 70441.26 |
+|     | ERC721 | ERC721A |
+| --- | ------ | ------- |
+| Min | 40531  | 49215   |
+| Max | 62431  | 105742  |
+| Avg | 45451  | 70441   |
 
 In average transferring tokens with ERC721A is 55% more expensive.
 
