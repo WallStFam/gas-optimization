@@ -1,5 +1,8 @@
 # Gas Optimization
 
+//Akin introduce that we've done the research and then the experimentation as well.
+
+
 We've all been there. A new collection drops and you go and try to mint, just to find that the gas fees are much more expensive than the NFT itself. Jeez!
 
 This is clearly not a good user experience. So, when creating the smart contract for your NFT collection, one of your main objectives should be to make minting gas fees as cheap as possible.
@@ -39,8 +42,8 @@ Here is a comparison of the gas costs to mint one token from two smart contracts
 
 |               | Gas used |
 | ------------- | -------- |
-| Vanilla721    | 73.539   |
-| Enumerable721 | 145.323  |
+| ERC721    | 73.539   |
+| ERC721Enumerable | 145.323  |
 
 ERC721Enumerable is 2 times as costly as vanilla ERC721!
 
@@ -48,8 +51,8 @@ The difference in gas used is even more pronounced if you look into mints that c
 
 |               | Gas used(after first mint) |
 | ------------- | -------------------------- |
-| Vanilla721    | 56.439                     |
-| Enumerable721 | 150.923                    |
+| ERC721     | 56.439                     |
+| ERC721Enumerable | 150.923                    |
 
 ERC721Enumerable is almost 3 times as costly as vanilla ERC721 after the first mint!
 
