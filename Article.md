@@ -369,7 +369,7 @@ function foo() public {
 
 |     | Gas cost(A) | Gas cost(B) |
 | --- | ----------- | ----------- |
-| foo | 36356       | 31606       |
+| foo | 36.356      | 31.606      |
 
 As you can see the gas cost of calling foo() increased by almost 5000 gas units just because of how the variables are packed!
 
@@ -407,8 +407,8 @@ Both checked and unchecked\_ functions do the same arithmetic operations, but th
 
 |               | Gas cost |
 | ------------- | -------- |
-| unchecked\_() | 36588    |
-| checked()     | 37578    |
+| unchecked\_() | 36.588   |
+| checked()     | 37.578   |
 
 The savings are not huge but if you have many different arithmetic operations or for example a for loop where you modify the value of the iterator, then you can save some gas for your users with an unchecked block.
 
@@ -432,6 +432,66 @@ You can check the smart contract and script used to calculate the gas costs at:
 
 -   https://github.com/WallStFam/gas-optimization/blob/master/contracts/SetVariables.sol
 -   https://github.com/WallStFam/gas-optimization/blob/master/scripts/setVariables.js
+
+## 9. Using the optimizer
+
+Solidity compiler comes with an integrated optimizer.
+
+The optimizer is supposedly able to reduce gas costs for both deployment and function calls. We are gonna test if this is actually true!
+
+In order to use the optimizer you need to enable it and set the amount of runs.
+
+(Note: Default behavior depends on each platform. For example, in hardhat it comes disabled and at 200 runs by default)
+
+There are many different types of optimizations. For a detailed explanation of them and how the optimizer works please refer to this AMA with the Solidity team: https://blog.soliditylang.org/2020/11/04/solidity-ama-1-recap/ (Solidity Optimizer section).
+
+In order to asses the effectiveness of the optimizer we went ahead and tested different mint functions setting the runs parameter of the optimizer to 1, 200 and 5000 and also turned off:
+
+Mint 1 token:
+
+|               | Runs 1  | Runs 200 | Runs 5000 | Off     |
+| ------------- | ------- | -------- | --------- | ------- |
+| ERC721        | 56.127  | 56.037   | 56.019    | 56.440  |
+| Enumerable721 | 150.372 | 150.260  | 150.242   | 150.924 |
+| ERC721A       | 56.600  | 56.372   | 56.345    | 57.949  |
+| Merkle721     | 67.340  | 67.180   | 67.127    | 69.015  |
+
+Mint 10 tokens:
+
+|               | Runs 1    | Runs 200  | Runs 5000 | Off       |
+| ------------- | --------- | --------- | --------- | --------- |
+| ERC721        | 561.270   | 560.370   | 560.190   | 564.400   |
+| Enumerable721 | 1.503.720 | 1.502.600 | 1.502.420 | 1.509.240 |
+| ERC721A       | 74.573    | 74.048    | 74.021    | 75.616    |
+| Merkle721     | 673.400   | 671.800   | 671.270   | 690.150   |
+
+Mint 100 tokens:
+
+|               | Runs 1     | Runs 200   | Runs 5000  | Off        |
+| ------------- | ---------- | ---------- | ---------- | ---------- |
+| ERC721        | 5.612.700  | 5.603.700  | 5.601.900  | 5.644.000  |
+| Enumerable721 | 15.037.200 | 15.026.000 | 15.024.200 | 15.092.400 |
+| ERC721A       | 254.303    | 250.808    | 250.781    | 252.286    |
+| Merkle721     | 6.734.000  | 6.718.000  | 6.712.700  | 6.901.500  |
+
+Unfortunately if we look at the first table(1 mint) there's not much benefit for using the optimizer. And the result is pretty much the same for all mint types and different amount of runs.
+
+If we look at the second table(10 mints) then we start seeing better results as the small gains, although small, start to add up.
+
+But from these results we cannot conclude that using the optimizer will always be a good idea, because the way the optimizer works is that it makes some sacrifices that can increase the size of the bytecode which increases the cost of deploying the smart contract.
+
+Then, let's now look at how much the cost of deployment differs from changing the amount of runs:
+
+|               | Runs 1    | Runs 200  | Runs 5000 | Off        |
+| ------------- | --------- | --------- | --------- | ---------- |
+| ERC721        | 1.247.060 | 1.272.592 | 1.465.382 | 2.329.618! |
+| Enumerable721 | 1.487.799 | 1.513.331 | 1.696.103 | 2.780.945! |
+| ERC721A       | 1.182.422 | 1.197.502 | 1.443.689 | 2.226.648! |
+| Merkle721     | 1.550.044 | 1.579.927 | 1.791.947 | 2.864.429! |
+
+If you want to test these functions yourself please refer to testOptimizer.js script in the scripts folder in the repository.
+
+Change the optimizer runs parameter in hardhat.config.js to any value you want to test. Be sure to recompile your code after changing the amount of runs.
 
 ## Testing
 

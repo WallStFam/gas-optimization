@@ -2,6 +2,7 @@ const { getAllOwners_ownerOf } = require("./scripts/getAllOwners/getAllOwners_ow
 const { getAllOwners_transfer_event } = require("./scripts/getAllOwners/getAllOwners_Transfer_event");
 const { mintWhitelisted } = require("./scripts/mintWhitelisted");
 const { setVariables } = require("./scripts/setVariables");
+const { testOptimizer } = require("./scripts/testOptimizer");
 const { unchecked } = require("./scripts/unchecked");
 const { variablePacking } = require("./scripts/variablePacking");
 const { vs721A } = require("./scripts/vs721A");
@@ -68,3 +69,5 @@ task(
     "setVariables",
     "Deploys SetVariables contract and reports gas usage for setting variables from zero to non-zero and vice versa"
 ).setAction(setVariables);
+
+task("testOptimizer", "Executes mint functions from different contracts and reports gas usage").setAction(testOptimizer);
