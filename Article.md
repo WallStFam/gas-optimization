@@ -2,7 +2,6 @@
 
 //Akin introduce that we've done the research and then the experimentation as well.
 
-
 We've all been there. A new collection drops and you go and try to mint, just to find that the gas fees are much more expensive than the NFT itself. Jeez!
 
 This is clearly not a good user experience. So, when creating the smart contract for your NFT collection, one of your main objectives should be to make minting gas fees as cheap as possible.
@@ -40,18 +39,18 @@ ERC721Enumerable uses 4 mappings and an array to keep track of the token ids eac
 
 Here is a comparison of the gas costs to mint one token from two smart contracts. One inherits from ERC721Enumerable and the other doesn't:
 
-|               | Gas used |
-| ------------- | -------- |
-| ERC721    | 73.539   |
+|                  | Gas used |
+| ---------------- | -------- |
+| ERC721           | 73.539   |
 | ERC721Enumerable | 145.323  |
 
 ERC721Enumerable is 2 times as costly as vanilla ERC721!
 
 The difference in gas used is even more pronounced if you look into mints that come after the first one:
 
-|               | Gas used(after first mint) |
-| ------------- | -------------------------- |
-| ERC721     | 56.439                     |
+|                  | Gas used(after first mint) |
+| ---------------- | -------------------------- |
+| ERC721           | 56.439                     |
 | ERC721Enumerable | 150.923                    |
 
 ERC721Enumerable is almost 3 times as costly as vanilla ERC721 after the first mint!
@@ -307,7 +306,12 @@ In the following table we compare a whitelist mint function from a contract that
 | ------------- | ---------------- | --------------- |
 | MintWhitelist | 58.107           | 67.212          |
 
-Luckily the overhead of whitelist minting using a Merkle tree is very small(around 15% more gas). This is because the cost of calculating hashes in Solidity is low.
+Luckily the overhead of whitelist minting using a Merkle tree is very small(around 15% more gas). This is because the cost of calculating hashes in Solidity is low:
+
+```
+Calculating a hash in solidity costs 30 gas + 6 gas per byte.
+For a tree of height 10, a total of 10 hashes need to be calculated: (30 + 6 * 4) * 10 = 540 gas
+```
 
 In order to decide if you should use a Merkle tree in your smart contract, make sure you understand the pros and cons. The gas cost is not much higher, but you will need to setup your frontend so it is able to create an instance of the Merkle tree and use it to calculate the proof.
 
@@ -435,9 +439,31 @@ One of the best ways to move the blockchain technology forward is to create a be
 
 Lowering gas costs is a great way to make a better UX.
 
-Whenever you are creating your own smart contract, make sure you test the cost of your functions, mainly the ones that your users will call(i.e mint function). Try to apply some or all of the techniques explained in this article to lower gas fees. You'll be helping not only your project but the whole ecosystem too.
+In this article we've explored different general techniques you can apply to your smart contracts. But how can you work on your own custom code?
 
-(Note: the repository we shared at the beginning of the article has smart contracts and scripts related to each section. If you've never calculated gas costs for your functions and would like to know how to do it, please take a look at those examples).
+The best approach to optimize your code in Solidity is to test gas costs of your functions. The idea is simple, you calculate how much gas a function consumes, make changes to your code and then calculate again to see if you reduced gas costs.
+
+You can calculate the gas cost of any function this way:
+
+```
+let tx = await contract.foo();
+tx = await tx.wait(); // Wait until the transaction is mined
+const gasUsed = tx.gasUsed.toNumber(); // gasUsed is a BigNumber, you can cast it to number if you need
+console.log(gasUsed);
+```
+
+And here's a shorter version:
+
+```
+const tx = await (await contract.foo()).wait();
+console.log(tx.gasUsed.toNumber());
+```
+
+When you are testing your functions, pay extra attention the ones that your users will call most(i.e mint function).
+
+By lowering gas costs you'll be helping not only your project, but the whole ecosystem too.
+
+(Note: the repository we shared at the beginning of the article has smart contracts and scripts related to each section. You can see how we calculated gas costs for all functions in those scripts).
 
 ## Popular contracts
 
@@ -468,3 +494,7 @@ Multiple mint phases
 Wrapped NFTs(they unlock a different NFT)
 Better updateable NFTs:
 https://nftchance.medium.com/mimetic-metadata-how-to-create-a-truly-non-dilutive-nft-collection-in-2022-746a01f886c5
+
+```
+
+```
