@@ -533,6 +533,8 @@ const tx = await (await contract.foo()).wait();
 console.log(tx.gasUsed.toNumber());
 ```
 
+You can run this code in any environment and you'll always get the same gasUsed(hardhat, rinkeby, mainnet, etc).
+
 When you are testing your functions, pay extra attention the ones that your users will call most(i.e mint function).
 
 By lowering gas costs you'll be helping not only your project, but the whole ecosystem too.
