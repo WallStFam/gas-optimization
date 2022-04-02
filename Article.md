@@ -439,13 +439,16 @@ Solidity compiler comes with an integrated optimizer.
 
 The optimizer is supposedly able to reduce gas costs for both deployment and function calls. We are gonna test if this is actually true!
 
-In order to use the optimizer you need to enable it and set the amount of runs.
+In order to use the optimizer you need to enable it and set the 'number of runs'.
 
-(Note: Default behavior depends on each platform. For example, in hardhat it comes disabled and at 200 runs by default)
+Taken from the documentation: "The number of runs ( --optimize-runs ) specifies roughly how often each opcode of the deployed code will be executed across the life-time of the contract".
+In Layman's terms, this means that if you have functions that are meant to be called many times, then you should set the number of runs high to hint the compiler how to optimize your code.
 
-There are many different types of optimizations. For a detailed explanation of them and how the optimizer works please refer to this AMA with the Solidity team: https://blog.soliditylang.org/2020/11/04/solidity-ama-1-recap/ (Solidity Optimizer section).
+(Note: Default behavior depends on each platform. For example, in Hardhat the optimizer comes disabled and at 200 runs by default)
 
-In order to asses the effectiveness of the optimizer we went ahead and tested different mint functions setting the runs parameter of the optimizer to 1, 200 and 5000 and also turned off:
+There are many different types of optimizations that the optimizer does. For a detailed explanation of them and how the optimizer works please refer to this AMA with the Solidity team: https://blog.soliditylang.org/2020/11/04/solidity-ama-1-recap/ (Solidity Optimizer section).
+
+In order to asses the effectiveness of the optimizer we tested different mint functions, setting the runs parameter to 1, 200 and 5000. We also tested the code with the optimizer turned off:
 
 Mint 1 token:
 
@@ -474,13 +477,13 @@ Mint 100 tokens:
 | ERC721A       | 254.303    | 250.808    | 250.781    | 252.286    |
 | Merkle721     | 6.734.000  | 6.718.000  | 6.712.700  | 6.901.500  |
 
-Unfortunately if we look at the first table(1 mint) there's not much benefit for using the optimizer. And the result is pretty much the same for all mint types and different amount of runs.
+The first thing we notice is that turning off the optimizer always causes mint functions to have a higher cost. But unfortunately there's not much benefit for using the optimizer. The gas costs are lower, yes, but just by a small amount. Also, although it seems to get better with a higher number of runs, the result is pretty much the same for all mint types and different number of runs.
 
-If we look at the second table(10 mints) then we start seeing better results as the small gains, although small, start to add up.
+Just by looking at these results, one might be tempted to conclude: "Yes, maybe it's not that much better, but at least it is better! So I might as well turn it on and set the number of runs really high".
 
-But from these results we cannot conclude that using the optimizer will always be a good idea, because the way the optimizer works is that it makes some sacrifices that can increase the size of the bytecode which increases the cost of deploying the smart contract.
+Before arriving to early conclusions we need to take a look at one more aspect of the optimizer. The way the optimizer works is that it makes some sacrifices that can increase the size of the resulting bytecode, which would increase the cost of deploying the smart contract.
 
-Then, let's now look at how much the cost of deployment differs from changing the amount of runs:
+Let's take a look at how much would it cost to deploy each contract by changing the amount of runs and also setting the optimizer off:
 
 |               | Runs 1    | Runs 200  | Runs 5000 | Off        |
 | ------------- | --------- | --------- | --------- | ---------- |
@@ -489,9 +492,20 @@ Then, let's now look at how much the cost of deployment differs from changing th
 | ERC721A       | 1.182.422 | 1.197.502 | 1.443.689 | 2.226.648! |
 | Merkle721     | 1.550.044 | 1.579.927 | 1.791.947 | 2.864.429! |
 
-If you want to test these functions yourself please refer to testOptimizer.js script in the scripts folder in the repository.
+Aha! And here's lies the interesting part:
 
-Change the optimizer runs parameter in hardhat.config.js to any value you want to test. Be sure to recompile your code after changing the amount of runs.
+First conclusion: it's always better to set the optimizer on.
+Setting the optimizer off makes gas costs higher both for deploying and calling functions.
+What's really surprising is that the cost of deployment is so much higher when the optimizer is off, almost double.
+
+Second conclusion: the 'number of runs' biggest impact is on the cost of deployment.
+With runs set at 5000, the cost of deployment is around 20% more expensive than it is by setting runs at 1 or 200.
+
+Hopefully this gives you an approximate idea of what to expect from the optimizer when applying it to your code. But please be sure to understand that the values we presented only apply to the mint function of different variations of ERC721 and you may find different results if your contract executes completely different code. So be sure to test your code similarly to the way we presented to find what's the cheapest configuration for your particular case.
+
+If you want to test these functions yourself or see how we calculated these values, please refer to scripts/testOptimizer.js file in the repository.
+
+You can change the optimizer runs parameter in hardhat.config.js to any value you want to test. You can also enable and disable the optimizer there. Be sure to recompile your code after making any changes.
 
 ## Testing
 
