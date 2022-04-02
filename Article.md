@@ -8,16 +8,16 @@ This is clearly not a good user experience. So, when creating the smart contract
 
 In this article we'll go through different ways to accomplish this:
 
-<ol>
-    <li>Do you really need ERC721Enumerable?</li> 
-    <li>Use mappings instead of arrays</li>
-    <li>ERC721A standard</li>
-    <li>Start with Token Id 1</li>
-    <li>Merkle Tree for whitelists</li>
-    <li>Packing your variables</li>
-    <li>Using unchecked</li>
-    <li>Why is first mint more expensive and is there anything you can do about it?</li>
-</ol>
+-   Do you really need ERC721Enumerable?
+-   Use mappings instead of arrays
+-   ERC721A standard
+-   Start with Token Id 1
+-   Merkle Tree for whitelists
+-   Packing your variables
+-   Using unchecked
+-   Why is first mint more expensive and is there anything you can do about it?
+-   Using the optimizer
+-   Turn 'if statements' into sepparate functions
 
 All the code mentioned in this article can be found in: https://github.com/WallStFam/gas-optimization
 
@@ -506,6 +506,76 @@ Hopefully this gives you an approximate idea of what to expect from the optimize
 If you want to test these functions yourself or see how we calculated these values, please refer to scripts/testOptimizer.js file in the repository.
 
 You can change the optimizer runs parameter in hardhat.config.js to any value you want to test. You can also enable and disable the optimizer there. Be sure to recompile your code after making any changes.
+
+</br>
+
+## Turn 'if statements' into sepparate functions
+
+Wall St Moms smart contract uses something we call 'minting phases'. There are 3 phases: Classic, Modern and Meta and each phase has different requirements and minting limits.
+
+Initially we thought it was a good idea to use one mint function for all phases. Internally the function would check the current phase using an 'if statement' and proceed accordingly. That way the smart contract interface would be just one function and the client wouldn't need to know which phase the contract was currently in.
+
+This approach maybe works in other environments, but for smart contracts is not the recommended pattern. The problem is that checking the phase in the smart contract adds complexity and increases the gas cost.
+
+Let's look at a simple example:
+
+```
+
+function mint() external payable {
+    require(msg.value >= 0.1 ether, "Not enough ether");
+    _mint(msg.sender, tokenId);
+    tokenId++;
+}
+
+function mintPhases(uint a) external payable {
+    require(msg.value >= 0.1 ether, "Not enough ether");
+    if(a == 1){
+        _mint(msg.sender, tokenId);
+        tokenId++;
+    } else if(a == 2){
+        _mint(msg.sender, 1000 + tokenId);
+        tokenId++;
+    }
+}
+
+```
+
+If you take a look at both functions, you'll realize that calling mint() does exactly the same as calling mintPhases(1). Here's the gas costs of both calls:
+
+|               | Gas cost |
+| ------------- | -------- |
+| mint()        | 56037    |
+| mintPhases(1) | 56325    |
+
+Using the if statement added 300 gas.
+
+(Note: The code itself if nonsensical and we just use it to illustrate the comparison)
+
+The mintPhases function could be separated into two different functions to save that gas cost:
+
+```
+
+function mintPhases_1(uint a) external payable {
+    require(msg.value >= 0.1 ether, "Not enough ether");
+    _mint(msg.sender, tokenId);
+    tokenId++;
+}
+
+function mintPhases_2(uint a) external payable {
+    require(msg.value >= 0.1 ether, "Not enough ether");
+    _mint(msg.sender, 1000 + tokenId);
+    tokenId++;
+}
+
+```
+
+Using this 2 functions passes the cost of the 'if statement' to the client.
+
+Now, you may think that 300 gas is not a big deal(actually at current prices it's around 5 cents), but realize that here we are just proposing a very simple example and this same pattern can be applied to more complex cases.
+
+Also all gas costs add up, and in this case there's not really much downside to using this optimization, you just need to add some more logic in the client side.
+
+</br>
 
 ## Testing
 

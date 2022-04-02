@@ -9,6 +9,7 @@ const { vs721A } = require("./scripts/vs721A");
 const { vs721A_transfer } = require("./scripts/vs721A_transfer");
 const { vsEnumerable } = require("./scripts/vsEnumerable");
 const { vsMerkle } = require("./scripts/vsMerkle");
+const { vsMintPhases } = require("./scripts/vsMintPhases");
 const { vsTokenIdZero } = require("./scripts/vsTokenIdZero");
 const { whitelistUsers } = require("./scripts/whitelistUsers");
 
@@ -19,7 +20,7 @@ module.exports = {
         version: "0.8.4",
         settings: {
             optimizer: {
-                enabled: false,
+                enabled: true,
                 runs: 200,
             },
         },
@@ -71,3 +72,5 @@ task(
 ).setAction(setVariables);
 
 task("testOptimizer", "Executes mint functions from different contracts and reports gas usage").setAction(testOptimizer);
+
+task("vsMintPhases", "Deploys MintPhases721 and reports gas usage").setAction(vsMintPhases);
