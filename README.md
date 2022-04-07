@@ -16,7 +16,7 @@ Feel free to use it in your own project. At Wall St Fam we believe blockchain is
 
 Clone the repository, go into the project directory and install all dependencies:
 
-```
+```js
 npm i
 ```
 
@@ -26,12 +26,11 @@ Run any hardhat task listed in hardhat.config.js.
 
 For example:
 
-```
+```js
 npx hardhat getAllOwners_ownerOf
 
 npx hardhat getAllOwners_transfer_event
 
 npx hardhat vsEnumerable
 
-etc
 ```
