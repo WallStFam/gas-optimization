@@ -510,11 +510,11 @@ You can change the optimizer runs parameter in hardhat.config.js to any value yo
 
 ## 10. Turn 'if statements' into sepparate functions
 
-Wall St Moms smart contract uses something we call 'minting phases'. There are 3 phases: Classic, Modern and Meta and each phase has different requirements and minting limits.
+The Wall St Moms smart contract uses something we call 'minting phases'. There are 3 phases: Classic, Modern and Meta and each phase has different requirements and minting limits.
 
-Initially we thought it was a good idea to use one mint function for all phases. Internally the function would check the current phase using an 'if statement' and proceed accordingly. That way the smart contract interface would be just one function and the client wouldn't need to know which phase the contract was currently in.
+Initially we thought it was a good idea to use one mint function for all phases. Internally the function would check the current phase using an 'if statement' and proceed accordingly. That way the smart contract interface would be just one function and the frontend client would not need to know which phase the contract was currently in.
 
-This approach maybe works in other environments, but for smart contracts is not the recommended pattern. The problem is that checking the phase in the smart contract adds complexity and increases the gas cost.
+This approach may work in other environments, but for smart contracts it is not the recommended pattern. The problem is that checking the phase in the smart contract adds complexity, reduce readability, and increases the gas cost.
 
 Let's look at a simple example:
 
@@ -568,13 +568,12 @@ function mintPhases_2(uint a) external payable {
 
 ```
 
-Using this 2 functions passes the cost of the 'if statement' to the client.
+Using separate functions for each phases passes the cost of the 'if statement' to the frontend.
 
 Now, you may think that 300 gas is not a big deal(actually at current prices it's around 5 cents), but realize that here we are just proposing a very simple example and this same pattern can be applied to more complex cases.
 
-Also all gas costs add up, and in this case there's not really much downside to using this optimization, you just need to add some more logic in the client side.
+Also all gas costs add up, and in this case there's no downside to using this pattern, you just need to add some more logic on the frontend to read which phase the smart contract is in, and call the corresponding mintPhases_x functions.
 
-</br>
 
 ## Doing Your Own Testing
 
@@ -632,4 +631,5 @@ The reason why those 3 contracts have such an expensive mint function is because
 
 For minting 5 tokens, the cost is really high(since it can potentially be almost 10 times less) and they would have made their users a big favor if they implemented ERC721A or a similar solution.
 
-
+## Closing 
+//Akin
