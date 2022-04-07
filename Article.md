@@ -8,16 +8,16 @@ This is clearly not a good user experience. So, when creating the smart contract
 
 In this article we'll go through different ways to accomplish this:
 
--   Do you really need ERC721Enumerable?
--   Use mappings instead of arrays
--   ERC721A standard
--   Start with Token Id 1
--   Merkle Tree for whitelists
--   Packing your variables
--   Using unchecked
--   Why is first mint more expensive and is there anything you can do about it?
--   Using the optimizer
--   Turn 'if statements' into sepparate functions
+1. Do you really need ERC721Enumerable?
+2. Use mappings instead of arrays
+3. ERC721A standard
+4. Start with Token Id 1
+5. Merkle Tree for whitelists
+6. Packing your variables
+7. Using unchecked
+8. Why is first mint more expensive and is there anything you can do about it?
+9. Using the optimizer
+10. Turn 'if statements' into sepparate functions
 
 All the code mentioned in this article can be found in: https://github.com/WallStFam/gas-optimization
 
@@ -39,7 +39,7 @@ ERC721Enumerable uses 4 mappings and an array to keep track of the token ids eac
 Here is a comparison of the gas costs to mint one token from two smart contracts. One inherits from ERC721Enumerable and the other doesn't:
 
 |                  | Gas used |
-| ---------------- | -------- |
+| ---------------- | --------: |
 | ERC721           | 73,539   |
 | ERC721Enumerable | 145,323  |
 
@@ -48,7 +48,7 @@ ERC721Enumerable is 2 times as costly as vanilla ERC721!
 The difference in gas used is even more pronounced if you look into mints that come after the first one:
 
 |                  | Gas used(after first mint) |
-| ---------------- | -------------------------- |
+| ---------------- | --------------------------: |
 | ERC721           | 56,439                     |
 | ERC721Enumerable | 150,923                    |
 
@@ -153,7 +153,7 @@ This makes the code much cheaper to execute and it doesn't get more expensive wh
 This is the average cost of calling mintWhitelist() for different amount of users:
 
 |               | WhitelistMapping(Avg) | WhitelistArray(Avg) |
-| ------------- | --------------------- | ------------------- |
+| ------------- | ---------------------: | ------------------: |
 | MintWhitelist | 58,598                | 434,427             |
 
 These values were calculated simulating 350 users that were positioned in different places in the whitelist.
@@ -195,12 +195,12 @@ But to be fair, if we are comparing apples to apples they should have compared E
 But, fortunately, even comparing to vanilla ERC721, ERC721A makes minting much cheaper if you are minting multiple tokens, as you can see in the following chart:
 
 |          | ERC721    | ERC721A | Overhead    |
-| -------- | --------- | ------- | ----------- |
+| -------- | ---------: | -------: | -----------: |
 | Mint 1   | 56,037    | 56,372  | -335        |
 | Mint 2   | 112,074   | 58,336  | 53,738      |
 | Mint 5   | 280,185   | 64,228  | 215,957     |
 | Mint 10  | 560,370   | 74,048  | 486,322!    |
-| Mint 100 | 5,603,700 | 250,808 | **5,352,892** |
+| Mint 100 | 5,603,700 | 250,808 | 5,352,892 |
 
 So... How did they achieve this much lower gas cost?
 
@@ -215,7 +215,7 @@ As we mentioned earlier, the problem with ERC721A is that because of this mintin
 The following is chart created by simulating 20 users minting and transferring different amount of tokens a 100 times in random order:
 
 |     | ERC721 | ERC721A |
-| --- | ------ | ------- |
+| --- | ------: | -------: |
 | Avg | 45,451  | 70,441   |
 | Min | 40,531  | 49,215   |
 | Max | 62,431  | 105,742  |
@@ -241,7 +241,7 @@ It's a nice trick to start the token id at 1, that way you'll make the first min
 Here's a comparison of the first mint of a ERC721A contract using tokenId initialized at 0 and at 1:
 
 |            | ERC721A(tokenId=0) | ERC721A(tokenId=1) | Overhead |
-| ---------- | ------------------ | ------------------ | -------- |
+| ---------- | ------------------: | ------------------: | --------: |
 | First mint | 90,572              | 73,472              | 17,100    |
 
 So if one of your users is going to make the first mint, make it cheaper for him by initializing tokenId in 1.
@@ -257,10 +257,10 @@ Those examples used either an array or mapping to store the whitelisted addresse
 Here's how much it cost to whitelist users using an array and a mapping:
 
 |                    | WhitelistArray | WhitelistMapping |
-| ------------------ | -------------- | ---------------- |
+| ------------------ | --------------: | ----------------: |
 | AddToWhitelist 10  | 645,651        | 461.260          |
-| AddToWhitelist 100 | **20,393,142**   | 4,612,552       |
-| AddToWhitelist 500 | **486,715,698** | 23,062,604     |
+| AddToWhitelist 100 | 20,393,142   | 4,612,552       |
+| AddToWhitelist 500 | 486,715,698 | 23,062,604     |
 
 Using an array is extremely expensive, mainly because each time you add a new user to the whitelist, you need to check if the user hasn't been added yet, making it more and more expensive to check when more users are already whitelisted(Note: you can use a different approach for WhitelistArray and not check if a user is already in the whitelist, but that will still be expensive, as it will be at least as expensive as WhitelistMapping).
 
@@ -302,7 +302,7 @@ The frontend will calculate the proof and pass it to the mint function. For this
 In the following table we compare a whitelist mint function from a contract that uses a mapping and another that uses a Merkle tree:
 
 |               | WhitelistMapping | WhitelistMerkle |
-| ------------- | ---------------- | --------------- |
+| ------------- | ----------------: | ---------------: |
 | MintWhitelist | 58,107           | 67,212          |
 
 Luckily the overhead of whitelist minting using a Merkle tree is very small(around 15% more gas). This is because the cost of calculating hashes in Solidity is low:
@@ -367,8 +367,8 @@ function foo() public {
 ```
 
 |     | Gas cost(A) | Gas cost(B) |
-| --- | ----------- | ----------- |
-| foo | 36.356      | 31.606      |
+| --- | -----------: | -----------: |
+| foo | 36,356      | 31,606      |
 
 As you can see the gas cost of calling foo() increased by almost 5000 gas units just because of how the variables are packed!
 
@@ -405,7 +405,7 @@ function checked() public {
 Both checked and unchecked\_ functions do the same arithmetic operations, but they use different amount of gas:
 
 |               | Gas cost |
-| ------------- | -------- |
+| ------------- | --------: |
 | unchecked\_() | 36,588   |
 | checked()     | 37,578   |
 
@@ -420,7 +420,7 @@ First mints are normally more expensive because there are variables that change 
 Given a variables this is the cost of setting it from 'zero to non-zero', from 'non-zero to non-zero' and 'from non-zero to zero':
 
 |                           | Gas cost |
-| ------------------------- | -------- |
+| ------------------------- | --------: |
 | From zero to non-zero     | 43,300   |
 | From non-zero to non-zero | 26,222   |
 | From non-zero to zero     | 21,444   |
@@ -452,7 +452,7 @@ In order to asses the effectiveness of the optimizer we tested different mint fu
 Mint 1 token:
 
 |               | Runs 1  | Runs 200 | Runs 5000 | Off     |
-| ------------- | ------- | -------- | --------- | ------- |
+| ------------- | -------: | --------: | ---------: | -------: |
 | ERC721        | 56,127  | 56,037   | 56,019    | 56,440  |
 | Enumerable721 | 150,372 | 150,260  | 150,242   | 150,924 |
 | ERC721A       | 56,600  | 56,372   | 56,345    | 57,949  |
@@ -461,7 +461,7 @@ Mint 1 token:
 Mint 10 tokens:
 
 |               | Runs 1    | Runs 200  | Runs 5000 | Off       |
-| ------------- | --------- | --------- | --------- | --------- |
+| ------------- | ---------: | ---------: | ---------: | ---------: |
 | ERC721        | 561,270   | 560,370   | 560,190   | 564,400   |
 | Enumerable721 | 1,503,720 | 1,502,600 | 1,502,420 | 1,509,240 |
 | ERC721A       | 74,573    | 74,048    | 74,021    | 75,616    |
@@ -470,7 +470,7 @@ Mint 10 tokens:
 Mint 100 tokens:
 
 |               | Runs 1     | Runs 200   | Runs 5000  | Off        |
-| ------------- | ---------- | ---------- | ---------- | ---------- |
+| ------------- | ----------: | ----------: | ----------: | ----------: |
 | ERC721        | 5,612,700  | 5,603,700  | 5,601,900  | 5,644,000  |
 | Enumerable721 | 15,037,200 | 15,026,000 | 15,024,200 | 15,092,400 |
 | ERC721A       | 254,303    | 250,808    | 250,781    | 252,286    |
@@ -485,11 +485,11 @@ Before arriving to early conclusions we need to take a look at one more aspect o
 Let's take a look at how much would it cost to deploy each contract by changing the amount of runs and also setting the optimizer off:
 
 |               | Runs 1    | Runs 200  | Runs 5000 | Off        |
-| ------------- | --------- | --------- | --------- | ---------- |
-| ERC721        | 1,247,060 | 1,272,592 | 1,465,382 | 2,329,618! |
-| Enumerable721 | 1,487,799 | 1,513,331 | 1,696,103 | 2,780,945! |
-| ERC721A       | 1,182,422 | 1,197,502 | 1,443,689 | 2,226,648! |
-| Merkle721     | 1,550,044 | 1,579,927 | 1,791,947 | 2,864,429! |
+| ------------- | ---------: | ---------: | ---------: | ----------: |
+| ERC721        | 1,247,060 | 1,272,592 | 1,465,382 | 2,329,618 |
+| Enumerable721 | 1,487,799 | 1,513,331 | 1,696,103 | 2,780,945 |
+| ERC721A       | 1,182,422 | 1,197,502 | 1,443,689 | 2,226,648 |
+| Merkle721     | 1,550,044 | 1,579,927 | 1,791,947 | 2,864,429 |
 
 Aha! And here's lies the interesting part:
 
@@ -508,7 +508,7 @@ You can change the optimizer runs parameter in hardhat.config.js to any value yo
 
 </br>
 
-## Turn 'if statements' into sepparate functions
+## 10. Turn 'if statements' into sepparate functions
 
 Wall St Moms smart contract uses something we call 'minting phases'. There are 3 phases: Classic, Modern and Meta and each phase has different requirements and minting limits.
 
@@ -542,7 +542,7 @@ function mintPhases(uint a) external payable {
 If you take a look at both functions, you'll realize that calling mint() does exactly the same as calling mintPhases(1). Here's the gas costs of both calls:
 
 |               | Gas cost |
-| ------------- | -------- |
+| ------------- | --------: |
 | mint()        | 56,037    |
 | mintPhases(1) | 56,325    |
 
@@ -576,7 +576,7 @@ Also all gas costs add up, and in this case there's not really much downside to 
 
 </br>
 
-## Testing
+## Doing Your Own Testing
 
 One of the best ways to move the blockchain technology forward is to create a better user experience for end users.
 
@@ -612,14 +612,14 @@ By lowering gas costs you'll be helping not only your project, but the whole eco
 
 ## Popular contracts
 
-To end this article. We thought it would be a good idea to check the smart contracts of popular NFT collections.
+To end this article, We thought it would be a fun to see the gas costs the smart contracts of popular NFT collections.
 
 We chose BAYC, Doodles and Cool Cats.
 
 Let's look at how much mint functions cost for each contract:
 
 |           | Mint 1  | Mint 5  |
-| --------- | ------- | ------- |
+| --------- | -------: | -------: |
 | BAYC      | 173,576 | 636,912 |
 | Doodles   | 152,599 | 610,131 |
 | Cool Cats | 149,778 | 608,730 |
@@ -632,14 +632,4 @@ The reason why those 3 contracts have such an expensive mint function is because
 
 For minting 5 tokens, the cost is really high(since it can potentially be almost 10 times less) and they would have made their users a big favor if they implemented ERC721A or a similar solution.
 
-## Ideas for other articles:
 
-Multiple reveal
-Multiple mint phases
-Wrapped NFTs(they unlock a different NFT)
-Better updateable NFTs:
-https://nftchance.medium.com/mimetic-metadata-how-to-create-a-truly-non-dilutive-nft-collection-in-2022-746a01f886c5
-
-```
-
-```
