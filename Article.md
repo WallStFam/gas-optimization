@@ -76,7 +76,6 @@ These scripts query the blockchain to get the owner of each token of an ERC721 c
 
 We used Wall Street Dads contract as an example in those scripts, but you are free to use the code with any other contract. You just need to replace the abi and contract address.
 
-</br>
 
 ## 2. Use mappings instead of arrays
 
@@ -174,7 +173,6 @@ And this is the script that was used to calculate gas costs with each method:
 
 -   https://github.com/WallStFam/gas-optimization/blob/master/scripts/mintWhitelisted.js
 
-</br>
 
 ## 3. ERC721A standard
 
@@ -228,7 +226,6 @@ If you want to check these values yourself or simulate a higher amount of users 
 
 https://github.com/WallStFam/gas-optimization/blob/master/scripts/vs721A_transfer.js
 
-</br>
 
 ## 4. Start with Token Id 1
 
@@ -246,7 +243,6 @@ Here's a comparison of the first mint of a ERC721A contract using tokenId initia
 
 So if one of your users is going to make the first mint, make it cheaper for him by initializing tokenId in 1.
 
-</br>
 
 ## 5. Merkle Tree for whitelists
 
@@ -322,7 +318,6 @@ We used the following smart contract(WhitelistMerkle721.sol) in the script which
 
 -   https://github.com/WallStFam/gas-optimization/blob/master/contracts/WhitelistMerkle721.sol
 
-</br>
 
 ## 6. Packing your variables
 
@@ -506,7 +501,6 @@ If you want to test these functions yourself or see how we calculated these valu
 
 You can change the optimizer runs parameter in hardhat.config.js to any value you want to test. You can also enable and disable the optimizer there. Be sure to recompile your code after making any changes.
 
-</br>
 
 ## 10. Turn 'if statements' into sepparate functions
 
