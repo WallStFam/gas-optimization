@@ -199,7 +199,7 @@ But, fortunately, even comparing to vanilla ERC721, ERC721A makes minting much c
 | Mint 1   | 56,037    | 56,372  | -335        |
 | Mint 2   | 112,074   | 58,336  | 53,738      |
 | Mint 5   | 280,185   | 64,228  | 215,957     |
-| Mint 10  | 560,370   | 74,048  | 486,322!    |
+| Mint 10  | 560,370   | 74,048  | 486,322    |
 | Mint 100 | 5,603,700 | 250,808 | 5,352,892 |
 
 So... How did they achieve this much lower gas cost?
@@ -264,7 +264,7 @@ Here's how much it cost to whitelist users using an array and a mapping:
 
 Using an array is extremely expensive, mainly because each time you add a new user to the whitelist, you need to check if the user hasn't been added yet, making it more and more expensive to check when more users are already whitelisted(Note: you can use a different approach for WhitelistArray and not check if a user is already in the whitelist, but that will still be expensive, as it will be at least as expensive as WhitelistMapping).
 
-It's not uncommon to whitelist 500, 1000 or even 2000 or 3000 users. At current gas prices, whitelisting 500 users at 23.062.604 gas, is equal to 5648$!
+It's not uncommon to whitelist 500, 1000 or even 2000 or 3000 users. At current gas prices, whitelisting 500 users at 23,062,604 gas, is equal to $5,648!
 
 Given that you probably don't want to spend that much money adding users to your whitelist, the solution, and cheapest way to do it, is using a Merkle tree.
 
@@ -284,7 +284,7 @@ The hash H7 is the root of the Merkle tree. The advantage of using a Merkle tree
 
 So instead of having to write thousands of addresses into your smart contract, you only need to write one Hash which is only 32 bytes.
 
-This, of course, makes writing a whitelist to the smart contract as cheap as possible, and it's independent of the size of the whitelist(the cost will be the same if the whitelist is of size 10 or of size 10.000).
+This, of course, makes writing a whitelist to the smart contract as cheap as possible, and it's independent of the size of the whitelist(the cost will be the same if the whitelist is of size 10 or of size 10,000).
 
 There are a couple of disadvantages though:
 
