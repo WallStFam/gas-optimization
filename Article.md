@@ -635,5 +635,11 @@ The reason why those 3 contracts have such an expensive mint function is because
 
 For minting 5 tokens, the cost is really high (since it can potentially be almost 10 times less) and they would have made their users a big favor if they implemented ERC721A or a similar solution.
 
-## Closing 
-//Akin
+## Final Thoughts 
+We’re still in the early stages of the Web3 ecosystem. The downside means we all will be dealing with poor UX and expensive operations.
+
+The upside is there’s an opportunity to squeeze out any and every possible work-around to ensure a great experience.
+
+At the end of the day, we need to remind ourselves that this is for the benefit of the people. So we’ll continue with the maniacal experimentation, research, and reporting to achieve an experience worth bragging about.
+
+Until next time.
