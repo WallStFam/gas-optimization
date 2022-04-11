@@ -1,10 +1,20 @@
 # Gas Optimization
 
-//Akin introduce that from our experience launching many NFT smart contracts and the research and then the experimentation as well.
+**You try to mint a new collection drop, only to find gas fees more expensive than the NFT itself!**
 
-We've all been there. A new collection drops and you go and try to mint, just to find that the gas fees are much more expensive than the NFT itself. Jeez!
+It’s a horrible experience. So we did something about it.
 
-This is clearly not a good user experience. So, when creating the smart contract for your NFT collection, one of your main objectives should be to make minting gas fees as cheap as possible.
+What you’re about to read is what happens when you to put a talented and passionate engineering team obsessed about NFT smart contracts under the task of finding a way to make gas fees cheaper.
+
+This guide is the result of our meticulous research and experimentation.
+
+And it’s the only the guide you’ll need to understand how to make NFT minting cheaper.
+
+Let’s get into it.
+
+---
+
+When creating the smart contract for your NFT collection, one of your main objectives should be to make minting gas fees as cheap as possible.
 
 In this article we'll go through different ways to accomplish this:
 
