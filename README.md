@@ -6,7 +6,7 @@ This is clearly not a good user experience. So, when creating the smart contract
 
 We created a Medium article where we take a deep dive into gas costs and strategies you can use to lower them:
 
-TODO -> Link to Medium article
+https://medium.com/wallstfam/the-ultimate-guide-to-nft-gas-optimization-7e9289e2d88f
 
 This repository is a Hardhat project(hardhat.org) that includes all the smart contracts and scripts used in the article.
 
