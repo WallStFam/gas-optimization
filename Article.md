@@ -95,7 +95,7 @@ For example, it's very common among NFT collections to use whitelists. Users who
 
 You can do a whitelist using an array as follows:
 
-```
+```js
 address[] whitelistedUsers;
 
 function mintPublicSale() external payable {
@@ -132,7 +132,7 @@ If your loop is unbounded, you need to try a different approach. Probably moving
 
 Let's rewrite the code using a mapping instead of an array:
 
-```
+```js
 mapping(address => bool) whitelistedUsers;
 
 function mintPublicSale() external payable {
@@ -522,7 +522,7 @@ This approach may work in other environments, but for smart contracts it is not 
 
 Let's look at a simple example:
 
-```
+```js
 
 function mint() external payable {
     require(msg.value >= 0.1 ether, "Not enough ether");
@@ -556,7 +556,7 @@ Using the if statement added 300 gas.
 
 The mintPhases function could be separated into two different functions to save that gas cost:
 
-```
+```js
 
 function mintPhases_1(uint a) external payable {
     require(msg.value >= 0.1 ether, "Not enough ether");
