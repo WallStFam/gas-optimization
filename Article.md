@@ -518,7 +518,7 @@ The Wall St Moms smart contract uses something we call 'minting phases'. There a
 
 Initially we thought it was a good idea to use one mint function for all phases. Internally the function would check the current phase using an 'if statement' and proceed accordingly. That way the smart contract interface would be just one function and the frontend client would not need to know which phase the contract was currently in.
 
-This approach may work in other environments, but for smart contracts it is not the recommended pattern. The problem is that checking the phase in the smart contract adds complexity, reduce readability, and increases the gas cost.
+This approach may work in other environments, but for smart contracts it is not the recommended pattern. The problem is that checking the phase in the smart contract adds complexity, reduces readability, and increases the gas cost.
 
 Let's look at a simple example:
 
