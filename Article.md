@@ -341,7 +341,7 @@ Let's look at two ways of packing 3 variables:
 
 A)
 
-```
+```js
 uint8 var1 = 1;
 uint256 var2 = 1;
 uint8 var3 = 1;
@@ -349,7 +349,7 @@ uint8 var3 = 1;
 
 B)
 
-```
+```js
 uint256 var1 = 1;
 uint8 var2 = 1;
 uint8 var3 = 1;
@@ -363,7 +363,7 @@ When you pack your variables this way you save in gas costs for both deploying t
 
 Let's take a look at gas costs of calling the following function:
 
-```
+```js
 function foo() public {
     var1 = 2;
     var2 = 3;
@@ -387,7 +387,7 @@ Arithmetic operations can be wrapped in unchecked blocks, that way the compiler 
 
 Let's look at an example:
 
-```
+```js
 uint a = 1;
 uint b = 2;
 uint c = 10;
@@ -591,7 +591,7 @@ The best approach to optimize your code in Solidity is to test gas costs of your
 
 You can calculate the gas cost of any function this way:
 
-```
+```js
 let tx = await contract.foo();
 tx = await tx.wait(); // Wait until the transaction is mined
 const gasUsed = tx.gasUsed.toNumber(); // gasUsed is a BigNumber, you can cast it to number if you need
@@ -600,7 +600,7 @@ console.log(gasUsed);
 
 And here's a shorter version:
 
-```
+```js
 const tx = await (await contract.foo()).wait();
 console.log(tx.gasUsed.toNumber());
 ```
