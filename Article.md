@@ -167,7 +167,7 @@ This is the average cost of calling mintWhitelist() for different amount of user
 
 These values were calculated simulating 350 users that were positioned in different places in the whitelist.
 
-The values that you'd get for using WhitelistArray will vary depending on where is the user(msg.sender) in the array.
+The values that you'd get for using WhitelistArray will vary depending on where the user(msg.sender) is in the array.
 If it's at the beginning, the call to mintWhitelist() will be much cheaper than if it is at the very end.
 
 The gas cost of calling mintWhitelist() for WhitelistMapping is always the same(min=max=avg), independent of the amount of users.
