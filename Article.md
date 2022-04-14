@@ -251,7 +251,7 @@ Here's a comparison of the first mint of a ERC721A contract using tokenId initia
 | ---------- | ------------------: | ------------------: | --------: |
 | First mint | 90,572              | 73,472              | 17,100    |
 
-So if one of your users is going to make the first mint, make it cheaper for him by initializing tokenId in 1.
+So if one of your users is going to make the first mint, make it cheaper for them by initializing the tokenId to 1.
 
 
 ## 5. Merkle Tree for whitelists
