@@ -422,7 +422,7 @@ In the first section "Do you really need ERC721Enumerable?" we compared the gas 
 
 First mints are normally more expensive because there are variables that change from zero to non-zero which in Solidity is very expensive.
 
-Given a variables this is the cost of setting it from 'zero to non-zero', from 'non-zero to non-zero' and 'from non-zero to zero':
+Given a variable, this is the cost of setting it from 'zero to non-zero', from 'non-zero to non-zero' and 'from non-zero to zero':
 
 |                           | Gas cost |
 | ------------------------- | --------: |
