@@ -14,8 +14,6 @@ Let’s get into it.
 
 ---
 
-When creating the smart contract for your NFT collection, one of your main objectives should be to make minting gas fees as cheap as possible.
-
 In this article we'll go through different ways to accomplish this:
 
 1. Do you really need ERC721Enumerable?
@@ -452,7 +450,7 @@ In Layman's terms, this means that if you have functions that are meant to be ca
 
 There are many different types of optimizations that the optimizer does. For a detailed explanation of them and how the optimizer works please refer to this AMA with the Solidity team: https://blog.soliditylang.org/2020/11/04/solidity-ama-1-recap/ (Solidity Optimizer section).
 
-In order to asses the effectiveness of the optimizer we tested different mint functions, setting the runs parameter to 1, 200 and 5000. We also tested the code with the optimizer turned off:
+In order to assess the effectiveness of the optimizer we tested different mint functions, setting the runs parameter to 1, 200 and 5000. We also tested the code with the optimizer turned off:
 
 Mint 1 token:
 
