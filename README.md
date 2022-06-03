@@ -20,7 +20,7 @@ Clone the repository, go into the project directory and install all dependencies
 npm i
 ```
 
-Depending on which scripts you run, you may need to input your .env variables(the format is in .env.example)
+Depending on which scripts you run, you may need to input your .env variables(the format is in .env.example).
 
 Run any hardhat task listed in hardhat.config.js.
 
