@@ -29,7 +29,7 @@ In this article we'll go through different ways to accomplish this:
 
 All the code mentioned in this article can be found in: https://github.com/WallStFam/gas-optimization
 
-Feel free to use the code in your own project. At Wall St Fam and Beyond Rarity, we believe blockchain is the future and thus we want to help where we can in making blockchain development more accesible to anyone.
+Feel free to use the code in your own project. At [Wall St Fam](https://www.wallstfam.com/) and [Beyond Rarity](https://www.beyondrarity.com/), we believe blockchain is the future and thus we want to help where we can in making blockchain development more accesible to anyone.
 
 After going through these topics, we'll finish the article, looking at smart contracts from popular NFT collections and see what they did right and what could be improved.
 
