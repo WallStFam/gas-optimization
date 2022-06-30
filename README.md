@@ -10,7 +10,7 @@ https://medium.com/wallstfam/the-ultimate-guide-to-nft-gas-optimization-7e9289e2
 
 This repository is a Hardhat project(hardhat.org) that includes all the smart contracts and scripts used in the article.
 
-Feel free to use it in your own project. At Wall St Fam we believe blockchain is our future and thus we want to help where we can in making blockchain development more accesible to anyone.
+Feel free to use it in your own project. At [Wall St Fam](https://www.wallstfam.com/) and [Beyond Rarity](https://www.beyondrarity.com/) we believe blockchain is our future and thus we want to help where we can in making blockchain development more accesible to anyone.
 
 ## How to use?
 
